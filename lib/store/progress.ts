@@ -37,7 +37,10 @@ interface ProgressStore {
   dbLoaded: boolean;
 
   setNodeStatus: (nodeId: string, status: NodeProgress["status"]) => void;
-  setProjectStatus: (projectId: string, status: ProjectProgress["status"]) => void;
+  setProjectStatus: (
+    projectId: string,
+    status: ProjectProgress["status"],
+  ) => void;
   toggleProjectChecklist: (projectId: string, itemId: string) => void;
   addXp: (amount: number) => void;
   unlockAchievement: (id: string) => void;
@@ -74,10 +77,30 @@ export const useProgressStore = create<ProgressStore>()(
       projectProgress: {},
       achievements: [],
       dailyTasks: [
-        { id: "dt1", title: "Docker-Dokumentation lesen (30 Min.)", xpReward: 50, completed: false },
-        { id: "dt2", title: "Container mit Nginx starten", xpReward: 75, completed: false },
-        { id: "dt3", title: "Dockerfile für eine Node.js-App schreiben", xpReward: 100, completed: false },
-        { id: "dt4", title: "Linux-Netzwerkgrundlagen wiederholen", xpReward: 50, completed: false },
+        {
+          id: "dt1",
+          title: "Docker-Dokumentation lesen (30 Min.)",
+          xpReward: 50,
+          completed: false,
+        },
+        {
+          id: "dt2",
+          title: "Container mit Nginx starten",
+          xpReward: 75,
+          completed: false,
+        },
+        {
+          id: "dt3",
+          title: "Dockerfile für eine Node.js-App schreiben",
+          xpReward: 100,
+          completed: false,
+        },
+        {
+          id: "dt4",
+          title: "Linux-Netzwerkgrundlagen wiederholen",
+          xpReward: 50,
+          completed: false,
+        },
       ],
       commandPaletteOpen: false,
       dbLoaded: false,
@@ -89,7 +112,10 @@ export const useProgressStore = create<ProgressStore>()(
             ...state.nodeProgress,
             [nodeId]: {
               status,
-              completedAt: status === "completed" ? new Date().toISOString() : prev?.completedAt,
+              completedAt:
+                status === "completed"
+                  ? new Date().toISOString()
+                  : prev?.completedAt,
             },
           },
         }));
@@ -119,9 +145,16 @@ export const useProgressStore = create<ProgressStore>()(
             status: "in_progress" as const,
             checklistState: {},
           };
-          const newChecklistState = { ...proj.checklistState, [itemId]: !proj.checklistState[itemId] };
+          const newChecklistState = {
+            ...proj.checklistState,
+            [itemId]: !proj.checklistState[itemId],
+          };
           const updated = { ...proj, checklistState: newChecklistState };
-          apiPost("project", { projectId, status: updated.status, checklistState: newChecklistState });
+          apiPost("project", {
+            projectId,
+            status: updated.status,
+            checklistState: newChecklistState,
+          });
           return {
             projectProgress: { ...state.projectProgress, [projectId]: updated },
           };
@@ -129,6 +162,11 @@ export const useProgressStore = create<ProgressStore>()(
       },
 
       addXp: (amount) => {
+        fetch("/api/progress/xp-history", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ xpGained: amount }),
+        }).catch(() => {});
         set((state) => {
           const newXp = state.stats.xp + amount;
           const newLevel = calculateLevel(newXp);
@@ -163,7 +201,7 @@ export const useProgressStore = create<ProgressStore>()(
         const newCompleted = !wasCompleted;
         set((state) => ({
           dailyTasks: state.dailyTasks.map((t) =>
-            t.id === taskId ? { ...t, completed: newCompleted } : t
+            t.id === taskId ? { ...t, completed: newCompleted } : t,
           ),
         }));
         apiPost("daily", { taskId, completed: newCompleted });
@@ -187,16 +225,24 @@ export const useProgressStore = create<ProgressStore>()(
                 xp: data.stats.xp ?? state.stats.xp,
                 level: data.stats.level ?? state.stats.level,
                 streak: data.stats.streak ?? state.stats.streak,
-                totalHoursStudied: data.stats.totalHoursStudied ?? state.stats.totalHoursStudied,
-                lastActivityAt: data.stats.lastActivityAt ?? state.stats.lastActivityAt,
+                totalHoursStudied:
+                  data.stats.totalHoursStudied ?? state.stats.totalHoursStudied,
+                lastActivityAt:
+                  data.stats.lastActivityAt ?? state.stats.lastActivityAt,
               };
             }
 
-            if (data.nodeProgress && Object.keys(data.nodeProgress).length > 0) {
+            if (
+              data.nodeProgress &&
+              Object.keys(data.nodeProgress).length > 0
+            ) {
               updates.nodeProgress = data.nodeProgress;
             }
 
-            if (data.projectProgress && Object.keys(data.projectProgress).length > 0) {
+            if (
+              data.projectProgress &&
+              Object.keys(data.projectProgress).length > 0
+            ) {
               updates.projectProgress = data.projectProgress;
             }
 
@@ -205,7 +251,10 @@ export const useProgressStore = create<ProgressStore>()(
             }
 
             if (data.dailyTaskCompletions) {
-              const completions = data.dailyTaskCompletions as Record<string, boolean>;
+              const completions = data.dailyTaskCompletions as Record<
+                string,
+                boolean
+              >;
               if (Object.keys(completions).length > 0) {
                 updates.dailyTasks = state.dailyTasks.map((task) => ({
                   ...task,
@@ -221,6 +270,6 @@ export const useProgressStore = create<ProgressStore>()(
         }
       },
     }),
-    { name: "roadmap-progress" }
-  )
+    { name: "roadmap-progress" },
+  ),
 );

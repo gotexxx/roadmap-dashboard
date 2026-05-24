@@ -1,16 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { pool } from "@/lib/db/client";
 import { migrate } from "@/lib/db/migrate";
-import { invalidateCache, setCache } from "@/lib/redis/client";
+import { invalidateCache } from "@/lib/redis/client";
 
 export async function POST(req: NextRequest) {
   try {
     const { projectId, status, checklistState } = await req.json();
     if (!projectId)
-      return () => {
-        NextResponse.json({ error: "projectId required" }, { status: 400 });
-        invalidateCache("user_progress:*");
-      }; // Clear stale cache if bad request
+      return NextResponse.json({ error: "projectId required" }, { status: 400 });
 
     await migrate();
     await pool.query(
@@ -24,8 +21,7 @@ export async function POST(req: NextRequest) {
         JSON.stringify(checklistState ?? {}),
       ],
     );
-    setCache(`user_progress:default`, null); // Invalidate cache immediately after update
-    invalidateCache("user_progress:*"); // Clear stale cache after update
+    invalidateCache("user_progress:*");
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.warn("DB error:", (err as Error).message);

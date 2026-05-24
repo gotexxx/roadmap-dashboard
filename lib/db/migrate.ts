@@ -56,6 +56,14 @@ CREATE TABLE IF NOT EXISTS daily_tasks (
   UNIQUE(user_id, task_id, date)
 );
 
+CREATE TABLE IF NOT EXISTS xp_history (
+  id SERIAL PRIMARY KEY,
+  user_id TEXT NOT NULL DEFAULT 'default',
+  date DATE NOT NULL,
+  xp_gained INTEGER NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
 INSERT INTO user_progress (user_id) VALUES ('default') ON CONFLICT DO NOTHING;
 `;
 

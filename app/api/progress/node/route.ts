@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { pool } from "@/lib/db/client";
 import { migrate } from "@/lib/db/migrate";
+import { invalidateCache } from "@/lib/redis/client";
 
 export async function POST(req: NextRequest) {
   try {
@@ -16,6 +17,7 @@ export async function POST(req: NextRequest) {
       [nodeId, status, status === "completed" ? new Date() : null]
     );
 
+    invalidateCache("user_progress:*");
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.warn("DB error:", (err as Error).message);
