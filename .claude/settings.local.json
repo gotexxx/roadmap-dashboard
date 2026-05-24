@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm add *)",
+      "Bash(pnpm approve-builds *)",
+      "Bash(pnpm build *)",
+      "Bash(pnpm dev *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000)",
+      "Bash(sed -i '' 's/time: \"przed 5 min\"/time: \"vor 5 Min.\"/' /Users/filipstosik/dev/roadmap/app/dashboard/devops/page.tsx)",
+      "Bash(sed -i '' 's/time: \"teraz\"/time: \"jetzt\"/' /Users/filipstosik/dev/roadmap/app/dashboard/devops/page.tsx)",
+      "Bash(sed -i '' 's/time: \"przed 22 min\"/time: \"vor 22 Min.\"/' /Users/filipstosik/dev/roadmap/app/dashboard/devops/page.tsx)",
+      "Bash(sed -i '' 's/time: \"przed 45 min\"/time: \"vor 45 Min.\"/' /Users/filipstosik/dev/roadmap/app/dashboard/devops/page.tsx)",
+      "Bash(sed -i '' 's/time: \"przed 2h\"/time: \"vor 2h\"/' /Users/filipstosik/dev/roadmap/app/dashboard/devops/page.tsx)",
+      "Bash(sed -i '' 's/\"Wiek\"/\"Alter\"/' /Users/filipstosik/dev/roadmap/app/dashboard/devops/page.tsx)",
+      "Bash(sed -i '' 's/Logi Deploymentu/Deployment-Logs/' /Users/filipstosik/dev/roadmap/app/dashboard/devops/page.tsx)",
+      "Bash(docker compose *)",
+      "Bash(curl -s http://localhost:3000/api/progress)",
+      "Bash(curl -s -X POST http://localhost:3000/api/progress/node -H 'Content-Type: application/json' -d '{\"nodeId\":\"linux-basics\",\"status\":\"completed\"}')",
+      "Bash(curl -s -X POST http://localhost:3000/api/progress/stats -H 'Content-Type: application/json' -d '{\"xp\":450,\"level\":3,\"streak\":5,\"totalHoursStudied\":30}')"
+    ]
+  }
+}
